@@ -77,6 +77,7 @@ func GetMembers(grade string) []string {
 func main() {
 	go keepAccessToken()
 	http.HandleFunc("/", handleGet)
+	fmt.Println("start....")
 	err := http.ListenAndServe(":8888", nil)
 	if err != nil {
 		fmt.Printf("%v", err)
