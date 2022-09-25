@@ -17,7 +17,8 @@ var accessToken string
 
 func keepAccessToken() {
 	for {
-		var token, err = request.GetAcessToken() // get accessToken
+		fmt.Println("update access token")
+		var token, err = request.AccessToken() // get accessToken
 		if err != nil {
 			fmt.Printf("get access token error! %v", err)
 		}
@@ -33,6 +34,7 @@ func handleGet(writer http.ResponseWriter, requ *http.Request) {
 	writer.Header().Add("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 	writer.Header().Set("content-type", "application/json;charset=UTF-8")
 	query := requ.URL.Query()
+	fmt.Printf("%v%v ", requ.Host, requ.RequestURI)
 	beginTime, strConvErr := strconv.Atoi(query["begin_time"][0])
 	if strConvErr != nil {
 		log.Fatal(strConvErr.Error())
@@ -41,14 +43,13 @@ func handleGet(writer http.ResponseWriter, requ *http.Request) {
 	if strConvErr != nil {
 		log.Fatal(strConvErr.Error())
 	}
-	fmt.Printf("%v%v ", requ.Host, requ.RequestURI)
-	var rqData = request.RqData{3, beginTime, endTime, GetMembers(query["member"][0])} // request para
+	var rqData = request.RqData{OpenCheckInDataType: 1, StartTime: beginTime, EndTime: endTime, UserList: GetMembers(query["member"][0])} // request para
 	jsonRqData, jsonEncodeErr := json.Marshal(rqData)
 	if jsonEncodeErr != nil {
 		fmt.Printf("json encode error! %v", jsonEncodeErr)
 	}
 	var checkInData, _ = request.GetSourData(accessToken, bytes.NewReader(jsonRqData)) // request
-	//fmt.Println(data.MakeReturnJson(checkInData))                                    // resp json data
+	//fmt.Println(string(data.MakeReturnJson(checkInData)))                              // resp json data
 	_, err := writer.Write(data.MakeReturnJson(checkInData))
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err.Error())
@@ -66,7 +67,7 @@ func GetMembers(grade string) []string {
 	if errJ != nil {
 		fmt.Println("error")
 	}
-	membersMap := members["20"].(map[string]interface{})
+	membersMap := members[grade].(map[string]interface{})
 	ids := make([]string, 0, len(membersMap))
 	for k := range membersMap {
 		ids = append(ids, k)

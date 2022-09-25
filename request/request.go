@@ -17,7 +17,7 @@ type RqData struct {
 	UserList            []string `json:"useridlist"`
 }
 
-func GetAcessToken() (string, error) {
+func AccessToken() (string, error) {
 	getTokenTime := time.Now()
 	var accessTokenUrl string
 	corpId := "ww15631b0d64da0525"

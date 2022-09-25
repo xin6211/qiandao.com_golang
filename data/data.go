@@ -55,6 +55,9 @@ func GetName(id string) string {
 		fmt.Println("error")
 	}
 	name := members["20"].(map[string]interface{})[id]
+	if name == nil {
+		name = members["21"].(map[string]interface{})[id]
+	}
 	return name.(string)
 }
 
@@ -79,7 +82,19 @@ func CalDurationDay(cTimesDay []int) float64 {
 			}
 		}
 		sort.Float64s(durations)
-		return durations[len(durations)/2-1]
+		var rst float64
+		if len(durations) >= 2 {
+			if len(durations)%2 == 0 {
+				rst = (durations[len(durations)/2] + durations[len(durations)/2-1]) / 2
+			} else {
+				rst = durations[len(durations)/2-1]
+			}
+		} else if len(durations) == 1 {
+			rst = durations[0]
+		} else {
+			rst = 0
+		}
+		return rst
 	}
 }
 
